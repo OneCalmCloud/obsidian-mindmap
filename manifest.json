@@ -1,0 +1,9 @@
+{
+	"id": "obsidian-mindmap",
+	"name": "Mindmap",
+	"version": "0.3.0",
+	"minAppVersion": "0.9.12",
+	"description": "An Obsidian plugin for creating Mindmaps.",
+	"author": "YunXiaoYi",
+	"isDesktopOnly": false
+}
