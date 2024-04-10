@@ -2,7 +2,6 @@ import { type App as ObsidianApp, Plugin, PluginSettingTab, TextFileView, moment
 import { createApp, ref, defineComponent, reactive, computed } from "vue";
 import { createPinia } from "pinia";
 import { useAppStore } from "./stores/app";
-import TestVue from "./components/test.vue";
 import MindmapAppView from "./App.vue";
 import * as yaml from "js-yaml";
 import { t } from "./lang/helpers";
@@ -220,7 +219,7 @@ export default class MindmapPlugin extends Plugin {
           const match = data.match(/---[\r\n]([\s\S]*?)[\r\n]---/);
           if (match) {
             const frontmatterContent = match[1];
-            let frontmatter = yaml.load(frontmatterContent) as any;
+            let frontmatter = yaml.load(frontmatterContent) as { type: string; tags: string[] };
             if (frontmatter.type === "mindmap-plugin") {
               leaf.setViewState({
                 type: VIEW_TYPE_MINDMAP,
@@ -276,7 +275,9 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let backgroundColorSettingDesc = document.createDocumentFragment();
     let backgroundColorSettingDescElement = document.createElement("div");
-    backgroundColorSettingDescElement.innerHTML = t('You can enter HTML color names, such as steelblue (refer to <a href="https://www.w3schools.com/colors/colors_names.asp">HTML Color Names</a>), or valid hexadecimal color values, for example, #e67700, or any other valid CSS color.');
+    backgroundColorSettingDescElement.createEl("span", { text: t("You can enter HTML color names, such as steelblue (refer to ") });
+    backgroundColorSettingDescElement.createEl("a", { href: "https://www.w3schools.com/colors/colors_names.asp", text: "HTML Color Names" });
+    backgroundColorSettingDescElement.createEl("span", { text: t(", or valid hexadecimal color values, for example, #e67700, or any other valid CSS color.") });
     backgroundColorSettingDesc.appendChild(backgroundColorSettingDescElement);
 
     new Setting(containerEl)

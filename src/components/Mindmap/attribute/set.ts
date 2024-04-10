@@ -45,8 +45,6 @@ export const attrTspan = (tspan: d3.Selection<SVGTSpanElement, TspanData, SVGTex
     .attr("dy", (d, i) => (i ? d.height : 0))
     .text((d) => d.name || " ");
 
-  var str = new RegExp(/(http(s)?:\/\/)/);
-  var leftBrace = new RegExp(/{/);
   tspan.text(function (d) {
     if (isImageNodeValue(d.name)) {
       return " ";

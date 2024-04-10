@@ -43,13 +43,13 @@ export const getMultiline = (str: string): string[] => {
   return multiline;
 };
 function getBase64Image(img: HTMLImageElement) {
-  var canvas = document.createElement("canvas");
+  let canvas = document.createElement("canvas");
   canvas.width = img.width;
   canvas.height = img.height;
-  var ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0, img.width, img.height);
-  var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
-  var dataURL = canvas.toDataURL("image/" + ext);
+  let ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
+  let dataURL = canvas.toDataURL("image/" + ext);
   return dataURL;
 }
 
@@ -257,15 +257,15 @@ export const download = () => {
   }
   document.documentElement.scrollTop = 0;
 
-  var imgElem = wrapperEle.value.querySelectorAll("image");
+  let imgElem = wrapperEle.value.querySelectorAll("image");
   let count = 0;
   imgElem.forEach((content, i) => {
-    var img = content.getAttribute("href");
+    let img = content.getAttribute("href");
     if (img.substring(0, 21) == "data:image/png;base64") {
       count++;
     } else {
       axios.get(img, { responseType: "arraybuffer" }).then((res) => {
-        var url = "data:image/png;base64," + btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ""));
+        let url = "data:image/png;base64," + btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ""));
         content.setAttribute("href", url);
         count++;
       });
