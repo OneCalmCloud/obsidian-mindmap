@@ -7,8 +7,7 @@ import * as yaml from "js-yaml";
 import i18n from './i18n'
 
 const pinia = createPinia();
-const lang = moment.locale() === "zh-cn" ? "zh-cn" : "en";
-
+const lang = moment.locale();
 
 i18n.changeLanguage(lang)
 
