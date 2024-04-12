@@ -1,9 +1,9 @@
 {
 	"id": "mindmap",
 	"name": "Mindmap",
-	"version": "0.3.1",
-	"minAppVersion": "0.9.12",
-	"description": "An Obsidian plugin for creating Mindmaps.",
+	"version": "0.3.2",
+	"minAppVersion": "0.12.17",
+	"description": "Create notes with Mindmaps.",
 	"author": "YunXiaoYi",
 	"isDesktopOnly": false
 }

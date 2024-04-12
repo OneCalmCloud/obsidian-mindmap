@@ -1,6 +1,6 @@
 {
   "name": "obsidian-mindmap",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An Obsidian plugin for creating Mindmaps.",
   "main": "main.js",
   "scripts": {
@@ -11,7 +11,8 @@
   "keywords": [
     "obsidian",
     "vue",
-    "vite"
+    "vite",
+    "mindmap"
   ],
   "author": "",
   "license": "MIT",
@@ -53,7 +54,7 @@
     "lodash": "^4.17.21",
     "lodash.clonedeep": "^4.5.0",
     "mitt": "^2.1.0",
-    "obsidian": "latest",
+    "obsidian": "^0.12.17",
     "pinia": "^2.1.7",
     "sass": "^1.72.0",
     "tslib": "^2.6.2",

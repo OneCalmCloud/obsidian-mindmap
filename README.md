@@ -1,6 +1,6 @@
 ## Obsidian Mindmap
 
-This is An Obsidian plugin to edit and view Mindmap, based on [vue3-mindmap](https://github.com/hellowuxin/vue3-mindmap).
+This is An Obsidian plugin for creating Mindmaps, based on [vue3-mindmap](https://github.com/hellowuxin/vue3-mindmap).
 
 [English](README.md) | [中文](README.zh.md)
 
