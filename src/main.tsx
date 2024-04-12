@@ -4,9 +4,13 @@ import { createPinia } from "pinia";
 import { useAppStore } from "./stores/app";
 import MindmapAppView from "./App.vue";
 import * as yaml from "js-yaml";
-import { t } from "./lang/helpers";
+import i18n from './i18n'
 
 const pinia = createPinia();
+const lang = moment.locale() === "zh-cn" ? "zh-cn" : "en";
+
+
+i18n.changeLanguage(lang)
 
 interface MindmapPluginSettings {
   backgroundColor: string;
@@ -176,7 +180,7 @@ function generateTemplateStr(data: object, fileIds: any[]): string {
 }
 
 function generateDefaultTemplateStr(): string {
-  return `---\ntype: mindmap-plugin\ntags:\n  - mindmap\n---\n\n<%%\n\n%%>\n\n\`\`\`json\n${JSON.stringify({ name: t("Title"), children: [{ name: t("Primary Node") }] })}\n\`\`\`\n`;
+  return `---\ntype: mindmap-plugin\ntags:\n  - mindmap\n---\n\n<%%\n\n%%>\n\n\`\`\`json\n${JSON.stringify({ name: i18n.t("setting.Title"), children: [{ name: i18n.t("setting.Primary Node") }] })}\n\`\`\`\n`;
 }
 
 export default class MindmapPlugin extends Plugin {
@@ -186,7 +190,7 @@ export default class MindmapPlugin extends Plugin {
       this.app.workspace.on("file-menu", (menu, file) => {
         menu.addItem((item) => {
           item
-            .setTitle(t("Create new mindmap"))
+            .setTitle(i18n.t("setting.Create new mindmap"))
             .setIcon("document")
             .onClick(async () => {
               let folderpath = file.path;
@@ -210,31 +214,33 @@ export default class MindmapPlugin extends Plugin {
     this.registerExtensions(["mindmap"], VIEW_TYPE_MINDMAP);
     this.registerView(VIEW_TYPE_MINDMAP, (leaf: WorkspaceLeaf) => new MindmapView(leaf, this));
 
-    this.app.workspace.on("active-leaf-change", (leaf) => {
-      const activeLeaf = this.app.workspace.activeLeaf;
-      //@ts-ignore
-      if (activeLeaf && activeLeaf.view instanceof MarkdownView) {
-        const data = activeLeaf.view.data;
-        if (data) {
-          const match = data.match(/---[\r\n]([\s\S]*?)[\r\n]---/);
-          if (match) {
-            const frontmatterContent = match[1];
-            let frontmatter = yaml.load(frontmatterContent) as { type: string; tags: string[] };
-            if (frontmatter.type === "mindmap-plugin") {
-              leaf.setViewState({
-                type: VIEW_TYPE_MINDMAP,
-                state: leaf.view.getState(),
-                popstate: true,
-              } as ViewState);
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", (leaf) => {
+        const activeLeaf = this.app.workspace.activeLeaf;
+        //@ts-ignore
+        if (activeLeaf && activeLeaf.view instanceof MarkdownView) {
+          const data = activeLeaf.view.data;
+          if (data) {
+            const match = data.match(/---[\r\n]([\s\S]*?)[\r\n]---/);
+            if (match) {
+              const frontmatterContent = match[1];
+              let frontmatter = yaml.load(frontmatterContent) as { type: string; tags: string[] };
+              if (frontmatter.type === "mindmap-plugin") {
+                leaf.setViewState({
+                  type: VIEW_TYPE_MINDMAP,
+                  state: leaf.view.getState(),
+                  popstate: true,
+                } as ViewState);
+              }
             }
           }
         }
-      }
-      if (activeLeaf && activeLeaf.view instanceof MindmapView) {
-        //@ts-ignore
-        activeLeafId.value = activeLeaf.id;
-      }
-    });
+        if (activeLeaf && activeLeaf.view instanceof MindmapView) {
+          //@ts-ignore
+          activeLeafId.value = activeLeaf.id;
+        }
+      })
+    );
   }
 
   getCurrentTime() {
@@ -269,19 +275,16 @@ class MindmapSettingTab extends PluginSettingTab {
     let { containerEl } = this;
 
     this.containerEl.empty();
-    this.containerEl.createEl("h3", {
-      text: t("Mindmap Setting"),
-    });
 
     let backgroundColorSettingDesc = document.createDocumentFragment();
     let backgroundColorSettingDescElement = document.createElement("div");
-    backgroundColorSettingDescElement.createEl("span", { text: t("You can enter HTML color names, such as steelblue (refer to ") });
+    backgroundColorSettingDescElement.createEl("span", { text: i18n.t("setting.You can enter HTML color names, such as steelblue (refer to ") });
     backgroundColorSettingDescElement.createEl("a", { href: "https://www.w3schools.com/colors/colors_names.asp", text: "HTML Color Names" });
-    backgroundColorSettingDescElement.createEl("span", { text: t(", or valid hexadecimal color values, for example, #e67700, or any other valid CSS color.") });
+    backgroundColorSettingDescElement.createEl("span", { text: i18n.t("setting., or valid hexadecimal color values, for example, #e67700, or any other valid CSS color.") });
     backgroundColorSettingDesc.appendChild(backgroundColorSettingDescElement);
 
     new Setting(containerEl)
-      .setName(t("Background")) //Background
+      .setName(i18n.t("setting.Background"))
       .setDesc(backgroundColorSettingDesc)
       .addText((text) =>
         text.setValue(this.plugin.settings.backgroundColor).onChange(async (value) => {
@@ -292,8 +295,8 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let scaleEl: HTMLDivElement;
     new Setting(containerEl)
-      .setName(t("Export Map Clarity"))
-      .setDesc(t("The higher the value, the higher the resolution of the exported image."))
+      .setName(i18n.t("setting.Export Map Clarity"))
+      .setDesc(i18n.t("setting.The higher the value, the higher the resolution of the exported image."))
       .addSlider((silder) => {
         silder.setLimits(1, 20, 1);
         silder.setValue(this.plugin.settings.scale);
@@ -312,13 +315,12 @@ class MindmapSettingTab extends PluginSettingTab {
         el.innerText = ` ${this.plugin.settings.scale.toString()}`;
       });
 
-    this.containerEl.createEl("h4", {
-      text: t("Interface Setting"),
-    });
+
+    new Setting(containerEl).setName(i18n.t("setting.Interface Setting")).setHeading();
 
     new Setting(containerEl)
-      .setName(t("Show Center Button"))
-      .setDesc(t("Located at the bottom right corner of the mind map interface, clicking it will center the screen on the root node."))
+      .setName(i18n.t("setting.Show Center Button"))
+      .setDesc(i18n.t("setting.Located at the bottom right corner of the mind map interface, clicking it will center the screen on the root node."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.centerBtn);
         toggle.onChange(async (value) => {
@@ -328,8 +330,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Show Fit-to-Screen Button"))
-      .setDesc(t("Located at the bottom right corner of the mind map interface, clicking it will fit the screen to just contain all content."))
+      .setName(i18n.t("setting.Show Fit-to-Screen Button"))
+      .setDesc(i18n.t("setting.Located at the bottom right corner of the mind map interface, clicking it will fit the screen to just contain all content."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.fitBtn);
         toggle.onChange(async (value) => {
@@ -339,8 +341,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Show Download Button")) //Show Download Button
-      .setDesc(t("Located at the bottom right corner of the mind map interface, clicking it will generate a PNG image based on the current view."))
+      .setName(i18n.t("setting.Show Download Button"))
+      .setDesc(i18n.t("setting.Located at the bottom right corner of the mind map interface, clicking it will generate a PNG image based on the current view."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.downloadBtn);
         toggle.onChange(async (value) => {
@@ -350,8 +352,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Show Undo/Redo Buttons"))
-      .setDesc(t("Located at the top right corner of the mind map interface, corresponding to undo and redo actions."))
+      .setName(i18n.t("setting.Show Undo/Redo Buttons"))
+      .setDesc(i18n.t("setting.Located at the top right corner of the mind map interface, corresponding to undo and redo actions."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.timetravel);
         toggle.onChange(async (value) => {
@@ -360,13 +362,11 @@ class MindmapSettingTab extends PluginSettingTab {
         });
       });
 
-    this.containerEl.createEl("h4", {
-      text: t("Edit Settings"),
-    });
+    new Setting(containerEl).setName(i18n.t("setting.Edit Settings")).setHeading();
 
     new Setting(containerEl)
-      .setName(t("Add Node Button"))
-      .setDesc(t("Display a plus sign when the mouse is near a node."))
+      .setName(i18n.t("setting.Add Node Button"))
+      .setDesc(i18n.t("setting.Display a plus sign when the mouse is near a node."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.addNodeBtn);
         toggle.onChange(async (value) => {
@@ -376,8 +376,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Drag Nodes"))
-      .setDesc(t("Disabling this will prevent nodes from being dragged."))
+      .setName(i18n.t("setting.Drag Nodes"))
+      .setDesc(i18n.t("setting.Disabling this will prevent nodes from being dragged."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.drag);
         toggle.onChange(async (value) => {
@@ -387,8 +387,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Editable"))
-      .setDesc(t("Disabling this will make nodes not editable."))
+      .setName(i18n.t("setting.Editable"))
+      .setDesc(i18n.t("setting.Disabling this will make nodes not editable."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.edit);
         toggle.onChange(async (value) => {
@@ -398,8 +398,8 @@ class MindmapSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName(t("Context Menu")) //Context Menu
-      .setDesc(t("Disabling this will make the right-click menu unavailable."))
+      .setName(i18n.t("setting.Context Menu"))
+      .setDesc(i18n.t("setting.Disabling this will make the right-click menu unavailable."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.contextmenu);
         toggle.onChange(async (value) => {
@@ -408,13 +408,11 @@ class MindmapSettingTab extends PluginSettingTab {
         });
       });
 
-    this.containerEl.createEl("h4", {
-      text: t("View Settings"),
-    });
+      new Setting(containerEl).setName(i18n.t("setting.View Settings")).setHeading();
 
     new Setting(containerEl)
-      .setName(t("Sharpen Corners"))
-      .setDesc(t("When enabled, nodes will no longer have smooth corners."))
+      .setName(i18n.t("setting.Sharpen Corners"))
+      .setDesc(i18n.t("setting.When enabled, nodes will no longer have smooth corners."))
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.sharpCorner);
         toggle.onChange(async (value) => {
@@ -425,7 +423,7 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let branchEl: HTMLDivElement;
     new Setting(containerEl)
-      .setName(t("Line Width"))
+      .setName(i18n.t("setting.Line Width"))
       .addSlider((silder) => {
         silder.setLimits(1, 6, 1);
         silder.setValue(this.plugin.settings.branch);
@@ -446,8 +444,8 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let xGapEl: HTMLDivElement;
     new Setting(containerEl)
-      .setName(t("Horizontal Spacing"))
-      .setDesc(t("Controls the spacing on the X-axis for each node."))
+      .setName(i18n.t("setting.Horizontal Spacing"))
+      .setDesc(i18n.t("setting.Controls the spacing on the X-axis for each node."))
       .addSlider((silder) => {
         silder.setLimits(0, 100, 1);
         silder.setValue(this.plugin.settings.xGap);
@@ -467,8 +465,8 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let yGapEl: HTMLDivElement;
     new Setting(containerEl)
-      .setName(t("Vertical Spacing"))
-      .setDesc(t("Controls the spacing on the Y-axis for each node."))
+      .setName(i18n.t("setting.Vertical Spacing"))
+      .setDesc(i18n.t("setting.Controls the spacing on the Y-axis for each node."))
       .addSlider((silder) => {
         silder.setLimits(0, 100, 1);
         silder.setValue(this.plugin.settings.yGap);
