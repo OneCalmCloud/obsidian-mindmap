@@ -6,7 +6,7 @@
           <foreignObject ref="foreignEle" style="display: none">
             <div class="div-input" ref="foreignDivEle" contenteditable></div>
             <div ref="foreignResizableDiv" style="cursor: default; outline: none; caret-color: transparent" contenteditable>
-              <VueDraggableResizable v-if="dragBoxStore.show" :active="dragBoxStore.active" :preventDeactivation="true" @resizeStop="dragBoxStopResizing" @resizing="dragBoxResize" :draggable="false" :lock-aspect-ratio="true" :w="dragBoxStore.w" :h="dragBoxStore.h">
+              <VueDraggableResizable class-name-handle="draggable-resizable-handle" v-if="dragBoxStore.show" :active="dragBoxStore.active" :preventDeactivation="true" @resizeStop="dragBoxStopResizing" @resizing="dragBoxResize" :draggable="false" :lock-aspect-ratio="true" :w="dragBoxStore.w" :h="dragBoxStore.h">
                 <img :src="dragBoxStore.img" style="width: 100%" />
               </VueDraggableResizable>
             </div>
@@ -45,7 +45,6 @@ import Contextmenu from "../Contextmenu.vue";
 import cloneDeep from "lodash.clonedeep";
 import i18next from "../../i18n";
 import VueDraggableResizable from "vue-draggable-resizable";
-import "vue-draggable-resizable/style.css";
 import { useDragBoxStore } from "../../stores/dragBox";
 import { useAppStore } from "../../stores/app";
 import { onEditBlur } from "./listener/listener";
@@ -247,5 +246,74 @@ export default defineComponent({
   min-width: 22px;
   padding: 1px;
   white-space: pre;
+}
+
+.vdr {
+  touch-action: none;
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px dashed black;
+}
+.draggable-resizable-handle {
+  box-sizing: border-box;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #eee;
+  border: 1px solid #333;
+}
+.draggable-resizable-handle-tl {
+  top: -10px;
+  left: -10px;
+  cursor: nw-resize;
+}
+.draggable-resizable-handle-tm {
+  top: -10px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: n-resize;
+}
+.draggable-resizable-handle-tr {
+  top: -10px;
+  right: -10px;
+  cursor: ne-resize;
+}
+.draggable-resizable-handle-ml {
+  top: 50%;
+  margin-top: -5px;
+  left: -10px;
+  cursor: w-resize;
+}
+.draggable-resizable-handle-mr {
+  top: 50%;
+  margin-top: -5px;
+  right: -10px;
+  cursor: e-resize;
+}
+.draggable-resizable-handle-bl {
+  bottom: -10px;
+  left: -10px;
+  cursor: sw-resize;
+}
+.draggable-resizable-handle-bm {
+  bottom: -10px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: s-resize;
+}
+.draggable-resizable-handle-br {
+  bottom: -10px;
+  right: -10px;
+  cursor: se-resize;
+}
+@media only screen and (max-width: 768px) {
+  [class*="draggable-resizable-handle-"]:before {
+    content: "";
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    top: -10px;
+    position: absolute;
+  }
 }
 </style>

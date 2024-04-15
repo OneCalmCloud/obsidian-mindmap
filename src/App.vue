@@ -7,7 +7,6 @@ import learn from "./learn.json";
 import Mindmap from "./components/Mindmap";
 import type { Locale } from "./components/Mindmap/interface";
 import {  ref, defineProps, defineEmits, watch, PropType } from "vue";
-import "vue-draggable-resizable/style.css";
 import { useAppStore, type FileIds } from "./stores/app";
 import { selection, zoom, zoomTransform } from "./components/Mindmap/variable";
 import * as d3 from "./components/Mindmap/d3";
