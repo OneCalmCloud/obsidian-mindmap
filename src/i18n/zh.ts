@@ -55,6 +55,7 @@ export default {
       "Controls the spacing on the Y-axis for each node.": "控制每个节点 Y 轴的间距。",
       Title: "标题",
       "Primary Node": "一级节点",
+      "Wheel zoom sensitivity":"滚轮缩放倍率"
     },
   },
 };

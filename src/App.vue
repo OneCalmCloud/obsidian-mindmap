@@ -6,14 +6,13 @@
 import learn from "./learn.json";
 import Mindmap from "./components/Mindmap";
 import type { Locale } from "./components/Mindmap/interface";
-import {  ref, defineProps, defineEmits, watch, PropType } from "vue";
+import { ref, defineProps, defineEmits, watch, PropType } from "vue";
 import { useAppStore, type FileIds } from "./stores/app";
 import { selection, zoom, zoomTransform } from "./components/Mindmap/variable";
 import * as d3 from "./components/Mindmap/d3";
 
 const appStore = useAppStore();
 const key = ref(1);
-
 interface MyPluginSettings {
   backgroundColor: string;
   centerBtn: boolean;
@@ -30,6 +29,7 @@ interface MyPluginSettings {
   xGap: number;
   yGap: number;
   scale: number;
+  wheelZoomRate: number;
 }
 
 const props = defineProps({
@@ -38,7 +38,7 @@ const props = defineProps({
   onUpdate: { type: Function },
   onZoomChange: { type: Function },
   fileIds: { type: Array as PropType<FileIds>, default: [] },
-    render: { type: Boolean, default: false },
+  render: { type: Boolean, default: false },
   activeLeafId: { type: String, default: null },
   local: { type: String as PropType<Locale>, default: "en" },
   settings: {
@@ -59,10 +59,10 @@ const props = defineProps({
       xGap: 84,
       yGap: 18,
       scale: 6,
+      wheelZoomRate: 0.1,
     },
   },
 });
-
 
 const emit = defineEmits<{
   (e: "update", data: object, fileIds: any): void;
@@ -106,21 +106,24 @@ watch(
     if (value <= 10) key.value++;
   }
 );
+zoom
+  .on("zoom", (e: d3.D3ZoomEvent<SVGSVGElement, null>) => {
+    const { g } = selection;
+    if (!g) {
+      return;
+    }
+    zoomTransform.value = e.transform;
+    g.attr("transform", e.transform.toString());
 
-zoom.on("zoom", (e: d3.D3ZoomEvent<SVGSVGElement, null>) => {
-  const { g } = selection;
-  if (!g) {
-    return;
-  }
-  zoomTransform.value = e.transform;
-  g.attr("transform", e.transform.toString());
-
-  emit("zoomChange", e.transform.toString());
-});
-
+    emit("zoomChange", e.transform.toString());
+  })
+  .wheelDelta((event: WheelEvent) => {
+    console.log("dddddddd");
+    const direction = Math.sign(event.deltaY);
+    return -direction * props.settings.wheelZoomRate;
+  });
 
 const onChange = (value: any) => {
   emit("update", data.value[0], appStore.fileIds);
 };
-
 </script>

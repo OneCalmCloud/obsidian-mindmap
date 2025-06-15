@@ -4,12 +4,12 @@ import { createPinia } from "pinia";
 import { useAppStore } from "./stores/app";
 import MindmapAppView from "./App.vue";
 import * as yaml from "js-yaml";
-import i18n from './i18n'
+import i18n from "./i18n";
 
 const pinia = createPinia();
 const lang = moment.locale();
 
-i18n.changeLanguage(lang)
+i18n.changeLanguage(lang);
 
 interface MindmapPluginSettings {
   backgroundColor: string;
@@ -27,6 +27,7 @@ interface MindmapPluginSettings {
   xGap: number;
   yGap: number;
   scale: number;
+  wheelZoomRate: number;
 }
 
 const activeLeafId = ref("");
@@ -47,6 +48,7 @@ const DEFAULT_SETTINGS: Partial<MindmapPluginSettings> = {
   xGap: 84,
   yGap: 18,
   scale: 6,
+  wheelZoomRate: 0.1,
 };
 export const VIEW_TYPE_MINDMAP = "mindmap-view";
 
@@ -83,7 +85,7 @@ export class MindmapView extends TextFileView {
         //@ts-ignore
         const shouldRender = computed(() => activeLeafId.value === self.leaf.id);
 
-        const zoomChnage = (value: string) => {
+        const zoomChange = (value: string) => {
           let find = appStore.viewTransforms.find((viewTransform) => viewTransform.leafId === activeLeafId.value);
           if (find) {
             find.transform = value;
@@ -98,7 +100,7 @@ export class MindmapView extends TextFileView {
           }
         };
 
-        return () => <MindmapAppView local={getLocal()} activeLeafId={activeLeafId.value} render={shouldRender.value} settings={self.plugin.settings} fileIds={self.fileIds.value} freshKey={self.key.value} data={b.value} onZoomChange={zoomChnage} onUpdate={saveFile} />;
+        return () => <MindmapAppView local={getLocal()} activeLeafId={activeLeafId.value} render={shouldRender.value} settings={self.plugin.settings} fileIds={self.fileIds.value} freshKey={self.key.value} data={b.value} onZoomChange={zoomChange} onUpdate={saveFile} />;
       },
     });
 
@@ -314,7 +316,6 @@ class MindmapSettingTab extends PluginSettingTab {
         el.innerText = ` ${this.plugin.settings.scale.toString()}`;
       });
 
-
     new Setting(containerEl).setName(i18n.t("setting.Interface Setting")).setHeading();
 
     new Setting(containerEl)
@@ -407,7 +408,7 @@ class MindmapSettingTab extends PluginSettingTab {
         });
       });
 
-      new Setting(containerEl).setName(i18n.t("setting.View Settings")).setHeading();
+    new Setting(containerEl).setName(i18n.t("setting.View Settings")).setHeading();
 
     new Setting(containerEl)
       .setName(i18n.t("setting.Sharpen Corners"))
@@ -482,6 +483,27 @@ class MindmapSettingTab extends PluginSettingTab {
         el.style.minWidth = "3em";
         el.style.textAlign = "right";
         el.innerText = ` ${this.plugin.settings.yGap.toString()}`;
+      });
+
+    let wheelZoomRateEl: HTMLDivElement;
+    new Setting(containerEl)
+      .setName(i18n.t("Wheel zoom sensitivity"))
+      .addSlider((silder) => {
+        silder.setLimits(0.01, 1, 0.01);
+        silder.setValue(this.plugin.settings.wheelZoomRate);
+
+        silder.onChange(async (value) => {
+          silder.showTooltip();
+          this.plugin.settings.wheelZoomRate = value;
+          silder.sliderEl.createEl("span", { text: "" });
+          wheelZoomRateEl.innerText = ` ${value.toString()}`;
+        });
+      })
+      .settingEl.createDiv("", (el) => {
+        wheelZoomRateEl = el;
+        el.style.minWidth = "3em";
+        el.style.textAlign = "right";
+        el.innerText = ` ${this.plugin.settings.wheelZoomRate.toString()}`;
       });
   }
 }
