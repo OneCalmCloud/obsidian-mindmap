@@ -245,6 +245,7 @@ export const moveView = (ele: Element): void => {
  * @param flag - 为true时放大，false缩小
  */
 export const scaleView = (flag: boolean): void => {
+
   const { svg } = selection;
   if (!svg) {
     return;

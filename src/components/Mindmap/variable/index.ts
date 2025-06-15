@@ -76,14 +76,13 @@ export const observer = new ResizeObserver((arr: ResizeObserverEntry[]) => {
   const b = parseInt(getComputedStyle(foreignDiv.parentNode as Element).borderTopWidth || "0", 10);
   const gap = (pl + b) * 2;
   if (isImageNodeValue(temp.target.textContent)) {
-    let imageNodeValue = JSON.parse(temp.target.textContent)
+    let imageNodeValue = JSON.parse(temp.target.textContent);
 
-    foreign.attr("width", imageNodeValue.width ).attr("height", imageNodeValue.height );
-  }else{
+    foreign.attr("width", imageNodeValue.width).attr("height", imageNodeValue.height);
+  } else {
     foreign.attr("width", width + gap).attr("height", height + gap);
   }
 
- 
   if (foreign.style("display") !== "none") {
     moveView(foreignDiv);
   }
@@ -95,6 +94,7 @@ export const addBtnSide = addBtnRect.side + addBtnRect.padding * 2;
 export const expandBtnRect = { width: 16, height: 4, radius: 2 };
 export const zoomTransform: Ref<d3.ZoomTransform> = ref(d3.zoomIdentity);
 export const zoom = d3.zoom<SVGSVGElement, null>().on("zoom", onZoomMove).scaleExtent(scaleExtent);
+
 export const drag = d3.drag<SVGGElement, Mdata>().container(getDragContainer).on("drag", onDragMove).on("end", onDragEnd);
 export const addNodeBtn = ref(false);
 export let mmcontext: SetupContext;

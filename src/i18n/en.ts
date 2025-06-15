@@ -54,7 +54,8 @@ export default {
       "Vertical Spacing": "Vertical Spacing",
       "Controls the spacing on the Y-axis for each node.": "Controls the spacing on the Y-axis for each node.",
       Title:"Title",
-      "Primary Node":"Primary Node"
+      "Primary Node":"Primary Node",
+      "Wheel zoom sensitivity":"Wheel zoom sensitivity"
     }
   },
 };
