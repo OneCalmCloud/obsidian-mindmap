@@ -118,7 +118,6 @@ zoom
     emit("zoomChange", e.transform.toString());
   })
   .wheelDelta((event: WheelEvent) => {
-    console.log("dddddddd");
     const direction = Math.sign(event.deltaY);
     return -direction * props.settings.wheelZoomRate;
   });

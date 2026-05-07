@@ -4,8 +4,6 @@
 
 [English](README.md) | [中文](README.zh.md)
 
-**注意:** 这个 Obsidian 插件还处于早期开发阶段，可能存在稳定性和功能性方面的限制!
-
 ### 如何使用
 
 通过在 obsidian 左侧文件列表右键新建 Mindmap 笔记

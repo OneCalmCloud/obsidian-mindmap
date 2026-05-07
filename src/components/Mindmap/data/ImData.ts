@@ -120,7 +120,8 @@ class ImData {
     let color = parent ? parent.color : ''
     if (depth === 1) {
       left = !!rawData.left
-      color = this.colorScale(`${this.colorNumber += 1}`)
+      color = rawData.color || this.colorScale(`${(this.colorNumber += 1)}`);
+      rawData.color = color;
     } else if (depth !== 0 && parent) {
       left = parent.left
     }
@@ -237,6 +238,7 @@ class ImData {
       del.depth = del.parent.depth + 1
       if (del.depth === 1) {
         del.color = this.colorScale(`${this.colorNumber += 1}`)
+        del.rawData.color = del.color;
       } else {
         del.left = del.parent.left
         del.rawData.left = del.parent.left
@@ -294,6 +296,7 @@ class ImData {
         const size = this.getSize(name)
         const rawData: Data = { name }
         const color = p.color ? p.color : this.colorScale(`${this.colorNumber += 1}`)
+        rawData.color = color;
         const d: Mdata = {
           id: `${p.id}-${p.children.length}`,
           name,
@@ -383,6 +386,7 @@ class ImData {
       const size = this.getSize(name)
       const start = before ? index : index + 1
       const color = parent.color ? parent.color : this.colorScale(`${this.colorNumber += 1}`)
+      rawSibling.color = color;
       const sibling: Mdata = {
         name,
         parent,

@@ -5,6 +5,7 @@ export interface Data {
   children?: Array<Data>
   left?: boolean
   collapse?: boolean
+  color?: string
 }
 
 export interface TreeData {
