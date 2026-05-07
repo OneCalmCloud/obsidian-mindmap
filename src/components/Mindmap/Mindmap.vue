@@ -254,6 +254,7 @@ export default defineComponent({
       hasPrev,
       hasNext,
       props,
+      getAdjustedBgColor,
       dragBoxStore,
       dragBoxDeactive,
       dragBoxResize,
