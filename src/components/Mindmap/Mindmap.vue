@@ -114,7 +114,7 @@ export default defineComponent({
       if (props.bgColor && props.bgColor !== "white") {
         return props.bgColor;
       }
-      return isDarkMode() ? "#1e1e1e" : props.bgColor;
+      return isDarkMode() ? "#1e1e1e" : "transparent";
     };
     // 立即执行
     watchEffect(() => i18next.changeLanguage(props.locale));
