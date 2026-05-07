@@ -113,7 +113,7 @@ export class MindmapView extends TextFileView {
     });
 
     const saveFile = (dataValue: object, fileIds: any[]) => {
-      this.rawData = generateTemplateStr(dataValue, fileIds);
+      this.rawData = generateTemplateStr(dataValue, fileIds, this.rawData);
       this.requestSave();
     };
 
@@ -177,7 +177,7 @@ function parseStringToJson(str: string) {
   return result;
 }
 
-function generateTemplateStr(data: object, fileIds: any[]): string {
+function generateTemplateStr(data: object, fileIds: any[], existingRawData?: string): string {
   let mindmapData = JSON.stringify(data);
   let newFileIds = fileIds.filter((fileId) => {
     if (mindmapData.includes(fileId.id)) {
@@ -185,9 +185,31 @@ function generateTemplateStr(data: object, fileIds: any[]): string {
     }
     return false;
   });
-  let fileIdStr = newFileIds.map((obj) => `${obj.id}: [[${obj.value}]]`).join("\n");
+  let fileIdStr = newFileIds.map((obj) => `${obj.id}: [[${obj.value}]]`).join('\n');
 
-  return `---\ntype: mindmap-plugin\ntags:\n  - mindmap\n---\n\n<%%\n${fileIdStr}\n%%>\n\n\`\`\`json\n${mindmapData}\n\`\`\`\n`;
+  // Parse existing frontmatter to preserve user-added properties
+  let frontmatter: Record<string, any> = {};
+  if (existingRawData) {
+    const match = existingRawData.match(/^---\n([\s\S]*?)\n---/);
+    if (match) {
+      try {
+        const parsed = yaml.load(match[1]) as Record<string, any>;
+        if (parsed && typeof parsed === 'object') {
+          frontmatter = parsed;
+        }
+      } catch (e) {
+        // If parsing fails, just use default frontmatter
+      }
+    }
+  }
+
+  // Ensure required plugin properties
+  frontmatter.type = 'mindmap-plugin';
+  frontmatter.tags = ['mindmap'];
+
+  const frontmatterStr = yaml.dump(frontmatter, { lineWidth: -1 }).trim();
+
+  return `---\n${frontmatterStr}\n---\n\n<%%\n${fileIdStr}\n%%>\n\n\`\`\`json\n${mindmapData}\n\`\`\`\n`;
 }
 
 function generateDefaultTemplateStr(): string {
