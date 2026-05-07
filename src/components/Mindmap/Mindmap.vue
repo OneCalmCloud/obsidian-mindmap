@@ -1,5 +1,5 @@
 <template>
-  <div :class="[style['container'], { [style['dark-mode']]: isDarkMode() }]">
+  <div :class="[style['container'], { [style['dark-mode']]: darkMode }]">
     <div :class="style['svg-wrapper']" style="z-index: 9999" ref="wrapperEle" :scale="props.scale" :data-mindmap-leaf="props.activeLeafId">
       <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: getAdjustedBgColor() }">
         <g ref="gEle">
@@ -50,7 +50,7 @@ import { useAppStore } from "../../stores/app";
 import { onEditBlur } from "./listener/listener";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import * as d3Scale from "d3-scale";
-import { PropType, defineComponent, nextTick, onMounted, ref, watch, watchEffect } from "vue";
+import { PropType, defineComponent, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from "vue";
 import { setCurrentLeafId } from "./instance";
 
 export default defineComponent({
@@ -103,18 +103,30 @@ export default defineComponent({
     const activate = () => setCurrentLeafId(props.activeLeafId);
     const els = getElements(props.activeLeafId);
 
-    const isDarkMode = () => document.body.classList.contains('theme-dark');
+    const darkMode = ref(document.body.classList.contains('theme-dark'));
+    let themeObserver: MutationObserver | null = null;
+
+    onMounted(() => {
+      themeObserver = new MutationObserver(() => {
+        darkMode.value = document.body.classList.contains('theme-dark');
+      });
+      themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    onUnmounted(() => {
+      themeObserver?.disconnect();
+    });
 
     const lightPalette = ["#FF9B8C", "#FFF7AB", "#ACEBBA", "#B2E1FF", "#DBC0FF"];
     const darkPalette = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6B9D"];
 
-    const getColorPalette = () => isDarkMode() ? darkPalette : lightPalette;
+    const getColorPalette = () => darkMode.value ? darkPalette : lightPalette;
 
     const getAdjustedBgColor = () => {
       if (props.bgColor && props.bgColor !== "white") {
         return props.bgColor;
       }
-      return isDarkMode() ? "#1e1e1e" : "transparent";
+      return darkMode.value ? "#1e1e1e" : "transparent";
     };
     // 立即执行
     watchEffect(() => i18next.changeLanguage(props.locale));
@@ -255,7 +267,7 @@ export default defineComponent({
       hasNext,
       props,
       getAdjustedBgColor,
-      isDarkMode,
+      darkMode,
       dragBoxStore,
       dragBoxDeactive,
       dragBoxResize,
