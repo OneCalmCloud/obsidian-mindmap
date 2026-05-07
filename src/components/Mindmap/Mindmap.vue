@@ -1,7 +1,7 @@
 <template>
   <div :class="style['container']">
     <div :class="style['svg-wrapper']" style="z-index: 9999" ref="wrapperEle" :scale="props.scale" :data-mindmap-leaf="props.activeLeafId">
-      <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: props.bgColor }">
+      <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: getAdjustedBgColor() }">
         <g ref="gEle">
           <foreignObject ref="foreignEle" style="display: none">
             <div class="div-input" ref="foreignDivEle" contenteditable></div>
@@ -102,6 +102,20 @@ export default defineComponent({
     const appStore = useAppStore();
     const activate = () => setCurrentLeafId(props.activeLeafId);
     const els = getElements(props.activeLeafId);
+
+    const isDarkMode = () => document.body.classList.contains('theme-dark');
+
+    const lightPalette = ["#FF9B8C", "#FFF7AB", "#ACEBBA", "#B2E1FF", "#DBC0FF"];
+    const darkPalette = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6B9D"];
+
+    const getColorPalette = () => isDarkMode() ? darkPalette : lightPalette;
+
+    const getAdjustedBgColor = () => {
+      if (props.bgColor && props.bgColor !== "white") {
+        return props.bgColor;
+      }
+      return isDarkMode() ? "#1e1e1e" : props.bgColor;
+    };
     // 立即执行
     watchEffect(() => i18next.changeLanguage(props.locale));
     watchEffect(() => emitter.emit("scale-extent", props.scaleExtent));
@@ -127,7 +141,7 @@ export default defineComponent({
       emitter.emit("selection-g", { leafId: props.activeLeafId, val: d3.select(els.gEle.value) });
       emitter.emit("selection-asstSvg", { leafId: props.activeLeafId, val: d3.select(els.asstSvgEle.value) });
       emitter.emit("selection-foreign", { leafId: props.activeLeafId, val: d3.select(els.foreignEle.value) });
-      emitter.emit("mmdata", { leafId: props.activeLeafId, val: new ImData(cloneDeep(props.modelValue[0]), xGap, yGap, getSize, d3Scale.scaleOrdinal(["#FF9B8C", "#FFF7AB", "#ACEBBA", "#B2E1FF", "#DBC0FF"])) });
+      emitter.emit("mmdata", { leafId: props.activeLeafId, val: new ImData(cloneDeep(props.modelValue[0]), xGap, yGap, getSize, d3Scale.scaleOrdinal(getColorPalette())) });
 
       changeSharpCorner.value = false;
       afterOperation();
