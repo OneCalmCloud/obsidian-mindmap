@@ -1,7 +1,7 @@
 <template>
-  <div :class="style['container']">
+  <div :class="[style['container'], { [style['dark-mode']]: darkMode }]">
     <div :class="style['svg-wrapper']" style="z-index: 9999" ref="wrapperEle" :scale="props.scale" :data-mindmap-leaf="props.activeLeafId">
-      <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: props.bgColor }">
+      <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: getAdjustedBgColor() }">
         <g ref="gEle">
           <foreignObject ref="foreignEle" style="display: none">
             <div class="div-input" ref="foreignDivEle" contenteditable></div>
@@ -50,7 +50,7 @@ import { useAppStore } from "../../stores/app";
 import { onEditBlur } from "./listener/listener";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import * as d3Scale from "d3-scale";
-import { PropType, defineComponent, nextTick, onMounted, ref, watch, watchEffect } from "vue";
+import { PropType, defineComponent, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from "vue";
 import { setCurrentLeafId } from "./instance";
 
 export default defineComponent({
@@ -102,6 +102,32 @@ export default defineComponent({
     const appStore = useAppStore();
     const activate = () => setCurrentLeafId(props.activeLeafId);
     const els = getElements(props.activeLeafId);
+
+    const darkMode = ref(document.body.classList.contains('theme-dark'));
+    let themeObserver: MutationObserver | null = null;
+
+    onMounted(() => {
+      themeObserver = new MutationObserver(() => {
+        darkMode.value = document.body.classList.contains('theme-dark');
+      });
+      themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    onUnmounted(() => {
+      themeObserver?.disconnect();
+    });
+
+    const lightPalette = ["#FF9B8C", "#FFF7AB", "#ACEBBA", "#B2E1FF", "#DBC0FF"];
+    const darkPalette = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6B9D"];
+
+    const getColorPalette = () => darkMode.value ? darkPalette : lightPalette;
+
+    const getAdjustedBgColor = () => {
+      if (props.bgColor && props.bgColor !== "white") {
+        return props.bgColor;
+      }
+      return darkMode.value ? "#1e1e1e" : "transparent";
+    };
     const currentHasPrev = getHasPrev(props.activeLeafId);
     const currentHasNext = getHasNext(props.activeLeafId);
     // 立即执行
@@ -129,7 +155,7 @@ export default defineComponent({
       emitter.emit("selection-g", { leafId: props.activeLeafId, val: d3.select(els.gEle.value) });
       emitter.emit("selection-asstSvg", { leafId: props.activeLeafId, val: d3.select(els.asstSvgEle.value) });
       emitter.emit("selection-foreign", { leafId: props.activeLeafId, val: d3.select(els.foreignEle.value) });
-      emitter.emit("mmdata", { leafId: props.activeLeafId, val: new ImData(cloneDeep(props.modelValue[0]), xGap, yGap, getSize, d3Scale.scaleOrdinal(["#FF9B8C", "#FFF7AB", "#ACEBBA", "#B2E1FF", "#DBC0FF"])) });
+      emitter.emit("mmdata", { leafId: props.activeLeafId, val: new ImData(cloneDeep(props.modelValue[0]), xGap, yGap, getSize, d3Scale.scaleOrdinal(getColorPalette())) });
 
       changeSharpCorner.value = false;
       afterOperation();
@@ -242,6 +268,8 @@ export default defineComponent({
       currentHasPrev,
       currentHasNext,
       props,
+      getAdjustedBgColor,
+      darkMode,
       dragBoxStore,
       dragBoxDeactive,
       dragBoxResize,

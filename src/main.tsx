@@ -34,7 +34,7 @@ interface MindmapPluginSettings {
 const activeLeafId = ref("");
 
 const DEFAULT_SETTINGS: Partial<MindmapPluginSettings> = {
-  backgroundColor: "#eeeef3",
+  backgroundColor: '',
   centerBtn: true,
   fitBtn: true,
   timetravel: true,
