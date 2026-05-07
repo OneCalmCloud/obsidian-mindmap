@@ -530,7 +530,7 @@ class MindmapSettingTab extends PluginSettingTab {
 
     let wheelZoomRateEl: HTMLDivElement;
     new Setting(containerEl)
-      .setName(i18n.t("Wheel zoom sensitivity"))
+      .setName(i18n.t('setting.Wheel zoom sensitivity'))
       .addSlider((silder) => {
         silder.setLimits(0.01, 1, 0.01);
         silder.setValue(this.plugin.settings.wheelZoomRate);
@@ -538,14 +538,14 @@ class MindmapSettingTab extends PluginSettingTab {
         silder.onChange(async (value) => {
           silder.showTooltip();
           this.plugin.settings.wheelZoomRate = value;
-          silder.sliderEl.createEl("span", { text: "" });
+          silder.sliderEl.createEl('span', { text: '' });
           wheelZoomRateEl.innerText = ` ${value.toString()}`;
         });
       })
-      .settingEl.createDiv("", (el) => {
+      .settingEl.createDiv('', (el) => {
         wheelZoomRateEl = el;
-        el.style.minWidth = "3em";
-        el.style.textAlign = "right";
+        el.style.minWidth = '3em';
+        el.style.textAlign = 'right';
         el.innerText = ` ${this.plugin.settings.wheelZoomRate.toString()}`;
       });
   }

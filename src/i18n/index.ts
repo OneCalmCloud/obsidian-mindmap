@@ -3,8 +3,8 @@ import zh from './zh'
 import en from './en'
 
 i18next.init({
-  fallbackLng: 'zh',
-  lng: 'zh', // if you're using a language detector, do not define the lng option
+  fallbackLng: 'en',
+  lng: 'en',
   // debug: true,
   resources: {
     zh,
