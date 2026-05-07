@@ -1,5 +1,5 @@
 <template>
-  <div :class="style['container']">
+  <div :class="[style['container'], { [style['dark-mode']]: isDarkMode() }]">
     <div :class="style['svg-wrapper']" style="z-index: 9999" ref="wrapperEle" :scale="props.scale" :data-mindmap-leaf="props.activeLeafId">
       <svg :class="style['svg']" ref="svgEle" :style="{ backgroundColor: getAdjustedBgColor() }">
         <g ref="gEle">
