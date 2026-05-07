@@ -118,7 +118,7 @@ export class MindmapView extends TextFileView {
     };
 
     const getLocal = () => {
-      return moment.locale() === "zh-cn" ? "zh-cn" : "en";
+      return moment.locale();
     };
 
     this.appEl = createApp(MyComponent).use(pinia);

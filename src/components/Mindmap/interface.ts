@@ -54,4 +54,4 @@ export type SelectionRect = d3.Selection<SVGRectElement, Mdata, SVGGElement, IsM
 export type SelectionCircle = d3.Selection<SVGCircleElement, Mdata, SVGGElement, IsMdata>
 export type TwoNumber = [number, number]
 export type IsMdata = Mdata | null
-export type Locale = 'zh-cn' | 'en' 
+export type Locale = 'zh-cn' | 'en' | 'ru' | 'fr' | 'ja' | 'ko' | 'pt' 
