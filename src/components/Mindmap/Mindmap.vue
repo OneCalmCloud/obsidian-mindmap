@@ -21,8 +21,8 @@
       <button v-if="downloadBtn" @click="download()"><i :class="style['download']"></i></button>
     </div>
     <div v-if="timetravel" :class="[style['button-list'], style['right-top']]">
-      <button @click="prev" :class="{ [style['disabled']]: !hasPrev }"><i :class="style['prev']"></i></button>
-      <button @click="next" :class="{ [style['disabled']]: !hasNext }"><i :class="style['next']"></i></button>
+      <button @click="prev" :class="{ [style['disabled']]: !currentHasPrev }"><i :class="style['prev']"></i></button>
+      <button @click="next" :class="{ [style['disabled']]: !currentHasNext }"><i :class="style['next']"></i></button>
     </div>
     <contextmenu v-if="ctm" :mindmap-leaf-id="props.activeLeafId" :position="contextmenuPos" :groups="menu" @click-item="onClickMenu"></contextmenu>
   </div>
@@ -35,7 +35,7 @@ import type { Data, Locale, TwoNumber } from "./interface";
 import style from "./css";
 import * as d3 from "./d3";
 import { afterOperation, ImData, getMmdata } from "./data";
-import { hasNext, hasPrev } from "./state";
+import { hasNext, hasPrev, getHasNext, getHasPrev } from "./state";
 import { fitView, getSize, centerView, next, prev, download, bindForeignDiv, restoreView } from "./assistant";
 import { xGap, yGap, branch, scaleExtent, ctm, selection, changeSharpCorner, addNodeBtn, mmprops } from "./variable";
 import { getElements } from "./variable/element";
@@ -102,6 +102,8 @@ export default defineComponent({
     const appStore = useAppStore();
     const activate = () => setCurrentLeafId(props.activeLeafId);
     const els = getElements(props.activeLeafId);
+    const currentHasPrev = getHasPrev(props.activeLeafId);
+    const currentHasNext = getHasNext(props.activeLeafId);
     // 立即执行
     watchEffect(() => i18next.changeLanguage(props.locale));
     watchEffect(() => emitter.emit("scale-extent", props.scaleExtent));
@@ -237,8 +239,8 @@ export default defineComponent({
       onClickMenu: (name: any) => (activate(), onClickMenu(name)),
       next: () => (activate(), next()),
       prev: () => (activate(), prev()),
-      hasPrev,
-      hasNext,
+      currentHasPrev,
+      currentHasNext,
       props,
       dragBoxStore,
       dragBoxDeactive,
