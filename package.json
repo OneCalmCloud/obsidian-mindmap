@@ -1,6 +1,6 @@
 {
   "name": "obsidian-mindmap",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An Obsidian plugin for creating Mindmaps.",
   "main": "main.js",
   "scripts": {

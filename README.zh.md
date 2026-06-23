@@ -9,4 +9,4 @@
 通过在 obsidian 左侧文件列表右键新建 Mindmap 笔记
 
 ![alt text](./assets/zh-img-1.png)
-![alt text](./assets/zh-img-1.png)
+![alt text](./assets/zh-img-2.png)
