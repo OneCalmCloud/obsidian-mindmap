@@ -108,8 +108,7 @@ export const zoom = d3.zoom<SVGSVGElement, null>().on("zoom", onZoomMove).scaleE
 
 export const drag = d3.drag<SVGGElement, Mdata>().container(getDragContainer).on("drag", onDragMove).on("end", onDragEnd);
 export const addNodeBtn = ref(false);
-// mmcontext 按 leafId 路由：避免多开 mindmap 时全局单例被“最后挂载的视图”覆盖，
-// 导致 A 视图的编辑数据被发射到 B 视图组件、进而保存进 B 的文件
+
 const mmcontextByLeaf = new Map<string, SetupContext>();
 export const getMmcontext = (leafId = getCurrentLeafId()): SetupContext => {
   const id = String(leafId || "");

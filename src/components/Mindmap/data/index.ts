@@ -38,8 +38,7 @@ export const afterOperation = (snap = true): void => {
   if (snap) {
     snapper.snap(mm.data);
   }
-  // 按 leafId 路由到当前操作视图自己的组件 context，
-  // 避免把 A 视图的数据发射到 B 视图、进而保存进 B 的文件
+
   getMmcontext(leafId).emit("update:modelValue", cloneDeep([mm.data.rawData]));
   updateTimeTravelState(leafId);
   draw();

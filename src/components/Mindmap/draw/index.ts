@@ -203,8 +203,6 @@ const updateNode = (update: SelectionG) => {
   return update;
 };
 
-// 默认参数按当前 leaf 解析数据与画布，保证 d 与 sele 始终来自同一视图，
-// 避免多开 mindmap 时把 B 视图的数据画进 A 视图的画布
 export const draw = (d = [getMmdata().data], sele = selection.g as d3.Selection<SVGGElement, any, any, any>): void => {
   const temp = sele.selectAll<SVGGElement, Mdata>(`g.${getSiblingGClass(d[0]).join(".")}`);
   temp.data(d, (d) => d.gKey).join(appendNode, updateNode);
