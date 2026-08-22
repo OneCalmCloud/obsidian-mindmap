@@ -108,8 +108,20 @@ export const zoom = d3.zoom<SVGSVGElement, null>().on("zoom", onZoomMove).scaleE
 
 export const drag = d3.drag<SVGGElement, Mdata>().container(getDragContainer).on("drag", onDragMove).on("end", onDragEnd);
 export const addNodeBtn = ref(false);
-export let mmcontext: SetupContext;
-emitter.on<SetupContext>("mindmap-context", (val) => (val ? (mmcontext = val) : null));
+
+const mmcontextByLeaf = new Map<string, SetupContext>();
+export const getMmcontext = (leafId = getCurrentLeafId()): SetupContext => {
+  const id = String(leafId || "");
+  const ctx = mmcontextByLeaf.get(id);
+  if (!ctx) {
+    throw new Error(`mmcontext not initialized for leafId=${id}`);
+  }
+  return ctx;
+};
+emitter.on<{ leafId: string; val: SetupContext }>("mindmap-context", (payload) => {
+  if (!payload?.leafId || !payload.val) return;
+  mmcontextByLeaf.set(payload.leafId, payload.val);
+});
 export const mmprops = ref({
   drag: false,
   edit: false,

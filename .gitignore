@@ -5,6 +5,9 @@
 # npm
 node_modules
 package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+pnpm-workspace.yaml.template
 
 # build
 main.js
