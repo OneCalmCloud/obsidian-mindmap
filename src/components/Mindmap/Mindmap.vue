@@ -136,7 +136,7 @@ export default defineComponent({
     watchEffect(() => emitter.emit("branch", props.branch));
     watchEffect(() => emitter.emit("sharp-corner", props.sharpCorner));
     watchEffect(() => emitter.emit("gap", { xGap: props.xGap, yGap: props.yGap }));
-    watchEffect(() => emitter.emit("mindmap-context", context));
+    watchEffect(() => emitter.emit("mindmap-context", { leafId: props.activeLeafId, val: context }));
     watchEffect(() => (addNodeBtn.value = props.edit && props.addNodeBtn));
     watchEffect(() => (mmprops.value.drag = props.drag));
     watchEffect(() => (mmprops.value.edit = props.edit));

@@ -3,7 +3,7 @@ import cloneDeep from "lodash.clonedeep";
 import { draw } from "../draw";
 import type { Data, IsMdata } from "../interface";
 import { getSnapshot, updateTimeTravelState } from "../state";
-import { mmcontext } from "../variable";
+import { getMmcontext } from "../variable";
 import ImData from "./ImData";
 import { getCurrentLeafId, setCurrentLeafId } from "../instance";
 
@@ -21,14 +21,14 @@ export const getMmdata = (leafId = getCurrentLeafId()): ImData => {
   return d;
 };
 
-// Backward-compat export name for older imports (read-only in new flow)
-export let mmdata: ImData;
+// Backward-compat export name removed: global mmdata pointed to the
+// last-mounted leaf's data and caused cross-view draw/save contamination.
+// Use getMmdata(leafId) instead.
 
 emitter.on<{ leafId: string; val: ImData }>("mmdata", (payload) => {
   if (!payload?.leafId || !payload.val) return;
   setCurrentLeafId(payload.leafId);
   mmdataByLeaf.set(payload.leafId, payload.val);
-  mmdata = payload.val;
 });
 
 export const afterOperation = (snap = true): void => {
@@ -38,7 +38,9 @@ export const afterOperation = (snap = true): void => {
   if (snap) {
     snapper.snap(mm.data);
   }
-  mmcontext.emit("update:modelValue", cloneDeep([mm.data.rawData]));
+  // 按 leafId 路由到当前操作视图自己的组件 context，
+  // 避免把 A 视图的数据发射到 B 视图、进而保存进 B 的文件
+  getMmcontext(leafId).emit("update:modelValue", cloneDeep([mm.data.rawData]));
   updateTimeTravelState(leafId);
   draw();
 };

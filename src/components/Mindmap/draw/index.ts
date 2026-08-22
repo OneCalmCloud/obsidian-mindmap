@@ -3,7 +3,7 @@ import * as d3 from "../d3";
 import { attrA, attrAddBtnRect, attrExpandBtnCircle, attrExpandBtnRect, attrG, attrPath, attrText, attrTspan, getSiblingGClass, getTspanData, attrImg } from "../attribute";
 import { getAddPath, makeTransition } from "../assistant";
 import { addBtnRect, addNodeBtn, drag, mmprops, selection } from "../variable";
-import { mmdata } from "../data";
+import { getMmdata } from "../data";
 import { addAndEdit, onClickExpandBtn, onEdit, onMouseEnter, onMouseLeave, onSelect } from "../listener";
 import style from "../css";
 
@@ -203,7 +203,9 @@ const updateNode = (update: SelectionG) => {
   return update;
 };
 
-export const draw = (d = [mmdata.data], sele = selection.g as d3.Selection<SVGGElement, any, any, any>): void => {
+// 默认参数按当前 leaf 解析数据与画布，保证 d 与 sele 始终来自同一视图，
+// 避免多开 mindmap 时把 B 视图的数据画进 A 视图的画布
+export const draw = (d = [getMmdata().data], sele = selection.g as d3.Selection<SVGGElement, any, any, any>): void => {
   const temp = sele.selectAll<SVGGElement, Mdata>(`g.${getSiblingGClass(d[0]).join(".")}`);
   temp.data(d, (d) => d.gKey).join(appendNode, updateNode);
 };
